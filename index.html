@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Mini App</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--tg-theme-bg-color, #ffffff);
+            color: var(--tg-theme-text-color, #000000);
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        button {
+            background-color: var(--tg-theme-button-color, #2481cc);
+            color: var(--tg-theme-button-text-color, #ffffff);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Мой Telegram Mini App</h1>
+        <p>Добро пожаловать в мое приложение!</p>
+        <button onclick="showAlert()">Нажми меня</button>
+        <p id="user-data"></p>
+    </div>
+
+    <script>
+        // Инициализация Telegram Web App
+        let tg = window.Telegram.WebApp;
+        
+        // Показываем главную кнопку
+        tg.MainButton.setText("Главная кнопка");
+        tg.MainButton.show();
+        
+        // Получаем данные пользователя
+        let user = tg.initDataUnsafe.user;
+        if (user) {
+            document.getElementById('user-data').innerText = 
+                `Привет, ${user.first_name} ${user.last_name || ''}!`;
+        }
+        
+        function showAlert() {
+            tg.showAlert("Кнопка нажата!");
+        }
+        
+        // Обработчик главной кнопки
+        tg.MainButton.onClick(function() {
+            tg.showPopup({
+                title: "Попап",
+                message: "Вы нажали главную кнопку!",
+                buttons: [{type: "ok"}]
+            });
+        });
+        
+        // Расширяем приложение на всю высоту
+        tg.expand();
+    </script>
+</body>
+</html>
