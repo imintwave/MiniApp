@@ -1,6 +1,6 @@
 // Конфигурация
 const BOT_TOKEN = '5718405917:AAEtLH8r_FEh98utTX7-1iSRBBifbMJ0REY';
-
+ 
 // Таблица каналов (добавляйте каналы здесь)
 const CHANNELS_TABLE = [
     { id: 1, username: '@SimpleDLC', name: 'SimpleDLC', required: true },
