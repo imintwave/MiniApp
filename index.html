@@ -1,68 +1,61 @@
+<!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<link rel="stylesheet" href="CSS/style.css">
+    <meta charset="UTF-8">
+    <title>SimpleDLC Shop</title>
+    <link rel="stylesheet" href="CSS/style.css">
 </head>
 <body>
 
-<!-- Баннер проверки подписки (показывается первым) -->
-<div id="subscriptionModal" class="modal" style="display: none;">
-    <div class="card">
-        <div id="statusIcon" class="status">✕</div>
+<!-- Баннер проверки подписки -->
+<div id="subscriptionModal" class="modal">
+    <div class="subscription-card">
+        <div id="statusIcon" class="status-icon">✕</div>
         
         <h2 id="statusTitle">Требуется подписка</h2>
-        <div id="statusText" class="subtitle">Для доступа подпишитесь на каналы</div>
+        <div id="statusText" class="status-subtitle">Для доступа подпишитесь на каналы</div>
         
-        <div class="channels">
-            <div class="channel">
+        <div class="channels-list">
+            <div class="channel-item">
                 <span class="channel-name">@SimpleDLC</span>
                 <a href="https://t.me/SimpleDLC" target="_blank" class="channel-link">Перейти</a>
             </div>
-            <div class="channel">
+            <div class="channel-item">
                 <span class="channel-name">@GameNews</span>
                 <a href="https://t.me/GameNews" target="_blank" class="channel-link">Перейти</a>
             </div>
         </div>
         
-        <button id="subscribeBtn" class="btn primary">Подписаться на все</button>
-        <button id="checkBtn" class="btn secondary">Проверить подписку</button>
+        <button id="subscribeBtn" class="btn btn-primary">Подписаться на все</button>
+        <button id="checkBtn" class="btn btn-secondary">Проверить подписку</button>
     </div>
 </div>
 
-<!-- Основной контент (скрыт пока не пройдена проверка) -->
-<div id="mainContent" style="display: none;">
+<!-- Основной контент -->
+<div id="mainContent" class="main-content">
     <div class="panel">
         <label class='logo'>
-            <a href="https://t.me/SimpleDLC" style='text-decoration: none; background: black; color: white;'>
+            <a href="https://t.me/SimpleDLC">
                 SimpleDLC
             </a>
             
-            <div class="container" style='background: black; position: fixed; top: 7; right: 5;'>
+            <div class="theme-switch">
                 <label class="switch">
-                    <input type="checkbox" id="checkbox" class='thema'>
+                    <input type="checkbox" id="themeToggle" class='theme-toggle'>
                     <span class="slider"></span> 
                 </label>
             </div>
         </label>
     </div>
 
-    <br><br><br>
-
-    <!-- Поиск и контейнер для карточек -->
-    <div style='text-align: center;'>
-        <input oninput="searchGames()" type="text" id="search" class="input" placeholder="Поиск игр..." >
+    <div class="search-container">
+        <input type="text" id="search" class="search-input" placeholder="Поиск игр...">
         
-        <!-- Контейнер с inline-стилями для сетки -->
-        <div id='results_search' style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; padding: 20px;"></div>
+        <div id='results_search' class="cards-grid"></div>
     </div>
-
-    <br><br><br><br>
-
-    <script src="script.js"></script>
 </div>
 
-<!-- Подключаем проверку подписки ПЕРВОЙ -->
-<script src=Java/"script.js"></script>
-
+<script src="Java/banner.js"></script>
+<script src="Java/script.js"></script>
 </body>
 </html>
