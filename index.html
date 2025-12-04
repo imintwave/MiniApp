@@ -1,10 +1,39 @@
+<!DOCTYPE html>
 <html>
-<head>
-    <title>Проверка подписки</title>
-</head>
 <body>
-    <div id="result">Проверяем...</div>
+
+<script>
+// Этот код работает ТОЛЬКО в Telegram
+if (window.Telegram && window.Telegram.WebApp) {
     
-    <script src="Java/script.js"></script>
+    // Включаем Telegram
+    Telegram.WebApp.ready();
+    
+    // Получаем ID пользователя
+    const user = Telegram.WebApp.initDataUnsafe.user;
+    
+    if (user && user.id) {
+        const USER_ID = user.id;
+        
+        // Твои данные
+        const TOKEN = '5718405917:AAEtLH8r_FEh98utTX7-1iSRBBifbMJ0REY';
+        const CHANNEL = '@simpledlc';
+        
+        // Проверяем подписку
+        fetch(`https://api.telegram.org/bot${TOKEN}/getChatMember?chat_id=${CHANNEL}&user_id=${USER_ID}`)
+        .then(r => r.json())
+        .then(d => {
+            if(d.ok && (d.result.status === 'member' || 
+                        d.result.status === 'administrator' || 
+                        d.result.status === 'creator')) {
+                document.write('✅ Подписан');
+            } else {
+                document.write('❌ Не подписан');
+            }
+        });
+    }
+}
+</script>
+
 </body>
 </html>
