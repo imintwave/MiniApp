@@ -2,10 +2,8 @@ const BOT_TOKEN = '5718405917:AAEtLH8r_FEh98utTX7-1iSRBBifbMJ0REY';
 
 const REQUIRED_CHANNELS = [
     { id: '@SimpleDLC', name: 'SimpleDLC', link: 'https://t.me/SimpleDLC' },
-    { id: '@legenssoft', name: 'Legens Soft', link: 'https://t.me/LegensSoft' }
+    { id: '@GameNews', name: 'GameNews', link: 'https://t.me/GameNews' }
 ];
-
-
 
 let userId = null;
 
@@ -76,11 +74,10 @@ async function checkAllSubscriptions() {
 function showSubscriptionBanner(failedChannels) {
     const modal = document.getElementById('subscribeModal');
     const channelsList = document.getElementById('channelsList');
-    const results = document.getElementById('results_search');
-    const search = document.getElementById('search');
     
     if (!modal || !channelsList) return;
     
+    // Очищаем и заполняем список каналов
     channelsList.innerHTML = '';
     
     failedChannels.forEach(channel => {
@@ -93,23 +90,14 @@ function showSubscriptionBanner(failedChannels) {
         channelsList.appendChild(channelItem);
     });
     
-    modal.style.display = 'flex';
-    if (results) results.style.display = 'none';
-    if (search) search.style.display = 'none';
+    // Показываем баннер
+    modal.classList.add('active');
 }
 
 function hideSubscriptionBanner() {
     const modal = document.getElementById('subscribeModal');
-    const results = document.getElementById('results_search');
-    const search = document.getElementById('search');
-    
-    if (modal) modal.style.display = 'none';
-    if (results) results.style.display = 'flex';
-    if (search) search.style.display = 'block';
-    
-    // ПОКАЗЫВАЕМ КАРТОЧКИ ПОСЛЕ СКРЫТИЯ БАННЕРА
-    if (typeof showCards === 'function') {
-        showCards();
+    if (modal) {
+        modal.classList.remove('active');
     }
 }
 
@@ -151,9 +139,8 @@ async function checkAccess() {
     
     if (!allSubscribed) {
         showSubscriptionBanner(failedChannels);
-    } else {
-        hideSubscriptionBanner();
     }
+    // Если все подписки есть, баннер не показываем вообще
 }
 
 document.addEventListener('DOMContentLoaded', () => {
