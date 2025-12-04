@@ -5,6 +5,8 @@ const REQUIRED_CHANNELS = [
     { id: '@legenssoft', name: 'LegensSoft', link: 'https://t.me/LegensSoft' }
 ];
 
+
+
 let userId = null;
 
 function getUserId() {
