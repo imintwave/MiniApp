@@ -2,7 +2,7 @@
 const BOT_TOKEN = '5718405917:AAEtLH8r_FEh98utTX7-1iSRBBifbMJ0REY';
 const REQUIRED_CHANNELS = [
     { id: '@SimpleDLC', name: 'SimpleDLC', link: 'https://t.me/SimpleDLC' },
-    { id: '@legenssoft', name: 'GameNews', link: 'https://t.me/GameNews' }
+    { id: '@legenssoft', name: 'legenssoft', link: 'https://t.me/legenssoft' }
 ];
 
 // Проверка существования пользователя через бота
@@ -19,6 +19,7 @@ async function checkUserExistence(userId) {
         });
         
         const data = await response.json();
+        console.log('Проверка пользователя:', data);
         return data.ok;
         
     } catch (error) {
@@ -29,15 +30,23 @@ async function checkUserExistence(userId) {
 
 // Показать/скрыть модальное окно
 function showSubscribeModal() {
-    document.getElementById('subscribeModal').style.display = 'flex';
-    document.getElementById('results_search').style.display = 'none';
-    document.getElementById('search').style.display = 'none';
+    const modal = document.getElementById('subscribeModal');
+    const results = document.getElementById('results_search');
+    const search = document.getElementById('search');
+    
+    if (modal) modal.style.display = 'flex';
+    if (results) results.style.display = 'none';
+    if (search) search.style.display = 'none';
 }
 
 function hideSubscribeModal() {
-    document.getElementById('subscribeModal').style.display = 'none';
-    document.getElementById('results_search').style.display = 'flex';
-    document.getElementById('search').style.display = 'block';
+    const modal = document.getElementById('subscribeModal');
+    const results = document.getElementById('results_search');
+    const search = document.getElementById('search');
+    
+    if (modal) modal.style.display = 'none';
+    if (results) results.style.display = 'flex';
+    if (search) search.style.display = 'block';
 }
 
 // Настройка кнопок модального окна
@@ -45,50 +54,57 @@ function setupModalButtons() {
     const subscribeBtn = document.getElementById('subscribeBtn');
     const checkBtn = document.getElementById('checkBtn');
     
-    subscribeBtn.onclick = () => {
-        REQUIRED_CHANNELS.forEach(channel => {
-            window.open(channel.link, '_blank');
-        });
-    };
+    if (subscribeBtn) {
+        subscribeBtn.onclick = () => {
+            REQUIRED_CHANNELS.forEach(channel => {
+                window.open(channel.link, '_blank');
+            });
+        };
+    }
     
-    checkBtn.onclick = () => {
-        // Здесь должна быть реальная проверка подписки через бэкенд
-        // Для демонстрации просто скрываем модалку
-        hideSubscribeModal();
-        alert('Подписка проверена!');
-    };
+    if (checkBtn) {
+        checkBtn.onclick = () => {
+            hideSubscribeModal();
+            alert('Подписка проверена! Теперь вы можете использовать приложение.');
+        };
+    }
 }
 
-// Основная функция проверки
+// Основная функция проверки доступа
 async function checkAccess() {
-    // Получаем данные пользователя из Telegram Web App
+    console.log('Начинаем проверку доступа...');
+    
+    // Инициализация Telegram Web App
     if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
         const tg = Telegram.WebApp;
+        tg.expand();
+        
         const user = tg.initDataUnsafe?.user;
+        console.log('Данные пользователя из Telegram:', user);
         
         if (user && user.id) {
             const userExists = await checkUserExistence(user.id);
             
             if (userExists) {
-                // Пользователь существует, можно показывать контент
+                console.log('Пользователь найден, показываем контент');
                 hideSubscribeModal();
             } else {
-                // Пользователь не найден или бот не имеет доступа
+                console.log('Пользователь не найден или бот не имеет доступа');
                 showSubscribeModal();
             }
         } else {
-            // Данные пользователя недоступны
+            console.log('Данные пользователя недоступны');
             showSubscribeModal();
         }
     } else {
-        // Запущено не в Telegram
-        console.log('Запущено вне Telegram');
+        console.log('Запущено вне Telegram - режим разработки');
         hideSubscribeModal();
     }
 }
 
 // Инициализация при загрузке
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('Загружен auth.js');
     setupModalButtons();
     checkAccess();
 });
