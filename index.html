@@ -1,180 +1,66 @@
-<html>
+<!DOCTYPE html>
+<html lang="ru">
 <head>
-<link rel="stylesheet" href="CSS/style.css">
-<!-- Стили для модального окна -->
-<style>
-    .modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.9);
-        display: none;
-        justify-content: center;
-        align-items: center;
-        z-index: 9999;
-        padding: 20px;
-    }
-    
-    .modal {
-        background: white;
-        border-radius: 20px;
-        padding: 30px;
-        width: 100%;
-        max-width: 400px;
-        text-align: center;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-    }
-    
-    .status-icon {
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        background: #ffebee;
-        color: #f44336;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 20px;
-        font-size: 40px;
-        font-weight: bold;
-    }
-    
-    h2 {
-        margin: 0 0 8px;
-        color: #333;
-        font-weight: 700;
-        font-size: 24px;
-    }
-    
-    .status-subtitle {
-        color: #666;
-        margin-bottom: 25px;
-        line-height: 1.4;
-        font-size: 16px;
-    }
-    
-    .channels-list {
-        background: #f8f9fa;
-        border-radius: 14px;
-        padding: 16px;
-        margin: 20px 0;
-    }
-    
-    .channel-item {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 12px 0;
-    }
-    
-    .channel-item:not(:last-child) {
-        border-bottom: 1px solid #e9ecef;
-    }
-    
-    .channel-name {
-        color: #333;
-        font-weight: 500;
-        font-size: 16px;
-    }
-    
-    .channel-link {
-        color: #667eea;
-        text-decoration: none;
-        font-size: 14px;
-        padding: 6px 12px;
-        border-radius: 6px;
-        background: rgba(102, 126, 234, 0.1);
-    }
-    
-    .channel-link:hover {
-        background: rgba(102, 126, 234, 0.2);
-    }
-    
-    .btn {
-        display: block;
-        width: 100%;
-        padding: 14px;
-        border: none;
-        border-radius: 12px;
-        font-size: 16px;
-        font-weight: 500;
-        cursor: pointer;
-        margin-top: 10px;
-        transition: all 0.3s;
-    }
-    
-    .btn:hover {
-        transform: translateY(-2px);
-    }
-    
-    .primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-    }
-    
-    .secondary {
-        background: #f8f9fa;
-        color: #666;
-    }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SimpleDLC</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="CSS/style.css">
 </head>
 <body>
-
-<!-- Модальное окно подписки -->
-<div id="subscribeModal" class="modal-overlay">
-    <div class="modal">
-        <div class="status-icon">✕</div>
-        
-        <h2>Требуется подписка</h2>
-        <div class="status-subtitle">Для доступа подпишитесь на каналы</div>
-        
-        <div class="channels-list" id="channelsList">
-            <div class="channel-item">
-                <span class="channel-name">SimpleDLC</span>
-                <a href="https://t.me/SimpleDLC" target="_blank" class="channel-link">Перейти →</a>
+    <!-- Модальное окно подписки -->
+    <div id="subscribeModal" class="modal-overlay">
+        <div class="modal">
+            <div class="status-icon">✕</div>
+            
+            <h2>Требуется подписка</h2>
+            <div class="status-subtitle">Для доступа подпишитесь на каналы</div>
+            
+            <div class="channels-list" id="channelsList">
+                <div class="channel-item">
+                    <span class="channel-name">SimpleDLC</span>
+                    <a href="https://t.me/SimpleDLC" target="_blank" class="channel-link">Перейти →</a>
+                </div>
+                <div class="channel-item">
+                    <span class="channel-name">GameNews</span>
+                    <a href="https://t.me/GameNews" target="_blank" class="channel-link">Перейти →</a>
+                </div>
             </div>
-            <div class="channel-item">
-                <span class="channel-name">GameNews</span>
-                <a href="https://t.me/GameNews" target="_blank" class="channel-link">Перейти →</a>
-            </div>
+            
+            <button class="btn primary" id="subscribeBtn">Подписаться на все</button>
+            <button class="btn secondary" id="checkBtn">Проверить подписку</button>
         </div>
-        
-        <button class="btn primary" id="subscribeBtn">Подписаться на все</button>
-        <button class="btn secondary" id="checkBtn">Проверить подписку</button>
     </div>
-</div>
 
-<div class="panel">
-<label class='logo'><a href="https://t.me/SimpleDLC" style='text-decoration: none; background: black; color: white;'>
-SimpleDLC
-</a>
- 
-   <div class="container" style='background: black; position: fixed; top: 7; right: 5;'>
-        <label class="switch">
-            <input type="checkbox" id="checkbox" class='thema'>
-            <span class="slider"></span> 
+    <!-- Основной контент -->
+    <div class="panel">
+        <label class='logo'><a href="https://t.me/SimpleDLC" style='text-decoration: none; background: black; color: white;'>
+            SimpleDLC
+        </a>
+        
+        <div class="container" style='background: black; position: fixed; top: 7; right: 5;'>
+            <label class="switch">
+                <input type="checkbox" id="checkbox" class='thema'>
+                <span class="slider"></span> 
+            </label>
+        </div>
         </label>
     </div>
 
-</label>
+    <br><br><br>
 
-</div>
+    <!-- Поиск и контейнер для карточек -->
+    <div style='text-align: center;'>
+        <input oninput="searchGames()" type="text" id="search" class="input" placeholder="Поиск игр..." >
+        
+        <!-- Контейнер с inline-стилями для сетки -->
+        <div id='results_search' style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; padding: 20px;"></div>
+    </div>
 
-<br><br><br>
+    <br><br><br><br>
 
-<!-- Поиск и контейнер для карточек -->
-<div style='text-align: center;'>
-    <input oninput="searchGames()" type="text" id="search" class="input" placeholder="Поиск игр..." >
-    
-    <!-- Контейнер с inline-стилями для сетки -->
-    <div id='results_search' style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; padding: 20px;"></div>
-</div>
-
-<br><br><br><br>
-
-<!-- Подключаем только auth.js, так как script.js уже встроен в HTML -->
-<script src="Java/auth.js"></script>
+    <!-- Подключение скриптов -->
+    <script src="Java/auth.js"></script>
+    <script src="Java/script.js"></script>
 </body>
 </html>
