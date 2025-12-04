@@ -1,10 +1,18 @@
 // Конфигурация
 const BOT_TOKEN = '5718405917:AAEtLH8r_FEh98utTX7-1iSRBBifbMJ0REY';
-const CHANNELS = ['@SimpleDLC', '@LegensSoft'];
+
+// Таблица каналов для проверки
+const CHANNELS_TABLE = [
+    { id: 1, username: '@SimpleDLC', name: 'SimpleDLC', required: true },
+    { id: 2, username: '@GameNews', name: 'Game News', required: true },
+    { id: 3, username: '@PremiumContent', name: 'Premium Content', required: true }
+];
 
 let telegramUser = null;
 let isSubscribed = false;
 let checkInProgress = false;
+let subscribedChannels = [];
+let unsubscribedChannels = [];
 
 // Показать баннер
 function showSubscriptionModal() {
@@ -20,11 +28,30 @@ function hideSubscriptionModal() {
     document.body.style.overflow = 'auto';
 }
 
+// Обновить список каналов в баннере
+function updateChannelsList() {
+    const channelsList = document.getElementById('channelsList');
+    
+    if (!channelsList) return;
+    
+    if (unsubscribedChannels.length === 0) {
+        channelsList.innerHTML = '<p style="color: green; padding: 15px;">✅ Вы подписаны на все каналы!</p>';
+    } else {
+        channelsList.innerHTML = unsubscribedChannels.map(channel => `
+            <div class="channel-item">
+                <span class="channel-name">${channel.name}</span>
+                <a href="https://t.me/${channel.username.substring(1)}" target="_blank" class="channel-link">Перейти</a>
+            </div>
+        `).join('');
+    }
+}
+
 // Обновить статус
 function updateStatus(subscribed, message = '') {
     const icon = document.getElementById('statusIcon');
     const title = document.getElementById('statusTitle');
     const text = document.getElementById('statusText');
+    const checkBtn = document.getElementById('checkBtn');
     
     if (subscribed) {
         icon.innerHTML = '✓';
@@ -32,18 +59,37 @@ function updateStatus(subscribed, message = '') {
         title.textContent = 'Доступ открыт!';
         text.textContent = message || 'Приятного пользования';
         
-        setTimeout(() => {
-            hideSubscriptionModal();
-            if (typeof window.showCards === 'function') {
-                window.showCards();
+        // Обновляем список каналов
+        updateChannelsList();
+        
+        // Если подписан на все каналы, скрываем баннер через 1.5 сек
+        if (unsubscribedChannels.length === 0) {
+            setTimeout(() => {
+                hideSubscriptionModal();
+                if (typeof window.showCards === 'function') {
+                    window.showCards();
+                }
+            }, 1500);
+        } else {
+            // Показываем кнопку проверки
+            if (checkBtn) {
+                checkBtn.style.display = 'block';
             }
-        }, 1500);
+        }
         
     } else {
         icon.innerHTML = '✕';
         icon.className = 'status-icon';
         title.textContent = 'Требуется подписка';
-        text.textContent = message || 'Для доступа подпишитесь на каналы';
+        text.textContent = message || 'Подпишитесь на все обязательные каналы';
+        
+        // Обновляем список каналов
+        updateChannelsList();
+        
+        // Показываем кнопку проверки
+        if (checkBtn) {
+            checkBtn.style.display = 'block';
+        }
     }
 }
 
@@ -56,10 +102,12 @@ function initTelegram() {
         
         console.log('Telegram User ID:', telegramUser?.id);
         checkSubscription();
-        setInterval(checkSubscription, 30000);
         
     } else {
         updateStatus(false, 'Откройте через Telegram бота');
+        // Показываем все каналы если не в Telegram
+        unsubscribedChannels = CHANNELS_TABLE.filter(ch => ch.required);
+        updateChannelsList();
     }
 }
 
@@ -89,22 +137,29 @@ async function checkSubscription() {
     }
     
     try {
-        let allSubscribed = true;
+        // Сбрасываем списки
+        subscribedChannels = [];
+        unsubscribedChannels = [];
         
-        for (const channel of CHANNELS) {
-            const isSub = await checkSingleChannel(channel, telegramUser.id);
-            if (!isSub) {
-                allSubscribed = false;
-                break;
+        // Проверяем каждый канал из таблицы
+        for (const channel of CHANNELS_TABLE) {
+            if (channel.required) {
+                const isSub = await checkSingleChannel(channel.username, telegramUser.id);
+                if (isSub) {
+                    subscribedChannels.push(channel);
+                } else {
+                    unsubscribedChannels.push(channel);
+                }
             }
         }
         
-        if (allSubscribed) {
+        // Проверяем статус подписки
+        if (unsubscribedChannels.length === 0) {
             isSubscribed = true;
-            updateStatus(true, 'Вы подписаны на все каналы!');
+            updateStatus(true, 'Вы подписаны на все обязательные каналы!');
         } else {
             isSubscribed = false;
-            updateStatus(false, 'Подпишитесь на все каналы');
+            updateStatus(false, `Осталось подписаться на ${unsubscribedChannels.length} канал(ов)`);
         }
         
     } catch (error) {
@@ -117,7 +172,7 @@ async function checkSubscription() {
 }
 
 // Проверка одного канала
-async function checkSingleChannel(channel, userId) {
+async function checkSingleChannel(channelUsername, userId) {
     try {
         const response = await fetch(
             `https://api.telegram.org/bot${BOT_TOKEN}/getChatMember`,
@@ -125,7 +180,7 @@ async function checkSingleChannel(channel, userId) {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
-                    chat_id: channel,
+                    chat_id: channelUsername,
                     user_id: userId
                 })
             }
@@ -140,15 +195,16 @@ async function checkSingleChannel(channel, userId) {
         }
         return false;
     } catch (error) {
-        console.error(`Ошибка ${channel}:`, error);
+        console.error(`Ошибка ${channelUsername}:`, error);
         return false;
     }
 }
 
-// Подписаться на все каналы
+// Подписаться на все неподписанные каналы
 function subscribeToAll() {
-    CHANNELS.forEach(channel => {
-        const channelName = channel.substring(1);
+    // Берем только неподписанные каналы
+    unsubscribedChannels.forEach(channel => {
+        const channelName = channel.username.substring(1);
         const link = `https://t.me/${channelName}`;
         
         if (window.Telegram?.WebApp?.openTelegramLink) {
@@ -158,11 +214,14 @@ function subscribeToAll() {
         }
     });
     
-    setTimeout(() => {
-        if (confirm('После подписки нажмите "Проверить подписку"')) {
-            checkSubscription();
-        }
-    }, 3000);
+    // Если есть неподписанные каналы, предлагаем проверить через 3 сек
+    if (unsubscribedChannels.length > 0) {
+        setTimeout(() => {
+            if (confirm('После подписки нажмите "Проверить подписку"')) {
+                checkSubscription();
+            }
+        }, 3000);
+    }
 }
 
 // Сброс кнопки
@@ -178,17 +237,23 @@ function resetButton() {
 document.addEventListener('DOMContentLoaded', function() {
     showSubscriptionModal();
     
+    // Назначаем обработчики кнопок
     document.getElementById('subscribeBtn').onclick = subscribeToAll;
     document.getElementById('checkBtn').onclick = checkSubscription;
     
     // Тема
     const themeToggle = document.getElementById('themeToggle');
-    themeToggle.addEventListener('change', function() {
-        document.body.classList.toggle('dark-mode', this.checked);
-    });
+    if (themeToggle) {
+        themeToggle.addEventListener('change', function() {
+            document.body.classList.toggle('dark-mode', this.checked);
+        });
+    }
     
+    // Инициализируем проверку подписки
     initTelegram();
 });
 
-// Глобальная функция
+// Глобальные функции
 window.isUserSubscribed = () => isSubscribed;
+window.getUnsubscribedChannels = () => unsubscribedChannels;
+window.getSubscribedChannels = () => subscribedChannels;
