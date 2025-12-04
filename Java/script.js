@@ -56,7 +56,7 @@ const products = [
     }
 ];
 
-// Создание карточки
+// Создание карточки товара
 function createCard(product) {
     return `
         <div class="product-card">
@@ -74,8 +74,10 @@ function createCard(product) {
 
 // Показать все карточки
 function showCards() {
-    if (typeof window.isUserSubscribed === 'function' && !window.isUserSubscribed()) {
-        return; // Не показываем если не подписан
+    // Проверяем доступ
+    if (window.telegramChecker && !window.telegramChecker.isUserSubscribed()) {
+        console.log('Доступ запрещен: не подписан на все каналы');
+        return;
     }
     
     const container = document.getElementById('results_search');
@@ -86,6 +88,11 @@ function showCards() {
 
 // Поиск товаров
 function searchGames() {
+    // Проверяем доступ
+    if (window.telegramChecker && !window.telegramChecker.isUserSubscribed()) {
+        return;
+    }
+    
     const search = document.getElementById('search').value.toLowerCase();
     const container = document.getElementById('results_search');
     
@@ -107,11 +114,17 @@ function buyProduct(id) {
     }
 }
 
-// Инициализация поиска
+// Инициализация при загрузке
 document.addEventListener('DOMContentLoaded', function() {
+    // Назначаем обработчик поиска
     const searchInput = document.getElementById('search');
     if (searchInput) {
         searchInput.oninput = searchGames;
+    }
+    
+    // Если доступ уже открыт, показываем карточки
+    if (window.telegramChecker && window.telegramChecker.isUserSubscribed()) {
+        showCards();
     }
 });
 
