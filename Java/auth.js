@@ -5,6 +5,7 @@ const REQUIRED_CHANNELS = [
     { id: '@GameNews', name: 'GameNews', link: 'https://t.me/GameNews' }
 ];
 
+
 let userId = null;
 
 function getUserId() {
