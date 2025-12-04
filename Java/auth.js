@@ -2,7 +2,7 @@ const BOT_TOKEN = '5718405917:AAEtLH8r_FEh98utTX7-1iSRBBifbMJ0REY';
 
 const REQUIRED_CHANNELS = [
     { id: '@SimpleDLC', name: 'SimpleDLC', link: 'https://t.me/SimpleDLC' },
-    { id: '@legenssoft', name: 'LegensSoft', link: 'https://t.me/LegensSoft' }
+    { id: '@GameNews', name: 'GameNews', link: 'https://t.me/GameNews' }
 ];
 
 let userId = null;
@@ -104,6 +104,11 @@ function hideSubscriptionBanner() {
     if (modal) modal.style.display = 'none';
     if (results) results.style.display = 'flex';
     if (search) search.style.display = 'block';
+    
+    // ПОКАЗЫВАЕМ КАРТОЧКИ ПОСЛЕ СКРЫТИЯ БАННЕРА
+    if (typeof showCards === 'function') {
+        showCards();
+    }
 }
 
 function setupModalButtons() {
