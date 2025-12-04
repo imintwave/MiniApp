@@ -1,77 +1,68 @@
-<!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Mini Shop</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link rel="stylesheet" href="CSS/style.css">
+<meta charset="UTF-8">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <!-- Заголовок -->
-        <header class="header">
-            <h1>🛒 Магазин</h1>
-            <div id="adminBadge" class="admin-badge hidden">👑 Админ</div>
-        </header>
 
-        <!-- Админ панель (только для админов) -->
-        <section id="adminPanel" class="admin-panel hidden">
-            <h2>Панель администратора</h2>
-            
-            <!-- Форма добавления товара -->
-            <div class="admin-form">
-                <h3>Добавить товар</h3>
-                <input type="text" id="productName" class="input" placeholder="Название товара">
-                <input type="number" id="productPrice" class="input" placeholder="Цена">
-                <textarea id="productDescription" class="input textarea" placeholder="Описание товара"></textarea>
-                <input type="text" id="productImage" class="input" placeholder="URL изображения">
-                <button onclick="addProduct()" class="btn btn-primary">Добавить товар</button>
+<!-- Баннер проверки подписки (показывается первым) -->
+<div id="subscriptionModal" class="modal" style="display: none;">
+    <div class="card">
+        <div id="statusIcon" class="status">✕</div>
+        
+        <h2 id="statusTitle">Требуется подписка</h2>
+        <div id="statusText" class="subtitle">Для доступа подпишитесь на каналы</div>
+        
+        <div class="channels">
+            <div class="channel">
+                <span class="channel-name">@SimpleDLC</span>
+                <a href="https://t.me/SimpleDLC" target="_blank" class="channel-link">Перейти</a>
             </div>
-
-            <!-- Список товаров для управления -->
-            <div class="admin-products">
-                <h3>Управление товарами</h3>
-                <div id="adminProductsList" class="products-list"></div>
-            </div>
-        </section>
-
-        <!-- Основной каталог товаров -->
-        <section class="catalog">
-            <h2>Каталог товаров</h2>
-            <div id="productsList" class="products-list">
-                <!-- Товары будут загружены здесь -->
-            </div>
-        </section>
-
-        <!-- Корзина -->
-        <section class="cart-section">
-            <h2>🛒 Корзина</h2>
-            <div id="cartItems" class="cart-items">
-                <!-- Товары в корзине -->
-            </div>
-            <div class="cart-total">
-                <strong>Итого: <span id="cartTotal">0</span> руб.</strong>
-                <button onclick="checkout()" class="btn btn-success">Оформить заказ</button>
-            </div>
-        </section>
-    </div>
-
-    <!-- Модальное окно для редактирования товара -->
-    <div id="editModal" class="modal hidden">
-        <div class="modal-content">
-            <h3>Редактировать товар</h3>
-            <input type="text" id="editName" class="input" placeholder="Название">
-            <input type="number" id="editPrice" class="input" placeholder="Цена">
-            <textarea id="editDescription" class="input textarea" placeholder="Описание"></textarea>
-            <input type="text" id="editImage" class="input" placeholder="URL изображения">
-            <div class="modal-actions">
-                <button onclick="updateProduct()" class="btn btn-primary">Сохранить</button>
-                <button onclick="closeEditModal()" class="btn btn-secondary">Отмена</button>
+            <div class="channel">
+                <span class="channel-name">@GameNews</span>
+                <a href="https://t.me/GameNews" target="_blank" class="channel-link">Перейти</a>
             </div>
         </div>
+        
+        <button id="subscribeBtn" class="btn primary">Подписаться на все</button>
+        <button id="checkBtn" class="btn secondary">Проверить подписку</button>
+    </div>
+</div>
+
+<!-- Основной контент (скрыт пока не пройдена проверка) -->
+<div id="mainContent" style="display: none;">
+    <div class="panel">
+        <label class='logo'>
+            <a href="https://t.me/SimpleDLC" style='text-decoration: none; background: black; color: white;'>
+                SimpleDLC
+            </a>
+            
+            <div class="container" style='background: black; position: fixed; top: 7; right: 5;'>
+                <label class="switch">
+                    <input type="checkbox" id="checkbox" class='thema'>
+                    <span class="slider"></span> 
+                </label>
+            </div>
+        </label>
     </div>
 
-    <script src="Java/script.js"></script>
+    <br><br><br>
+
+    <!-- Поиск и контейнер для карточек -->
+    <div style='text-align: center;'>
+        <input oninput="searchGames()" type="text" id="search" class="input" placeholder="Поиск игр..." >
+        
+        <!-- Контейнер с inline-стилями для сетки -->
+        <div id='results_search' style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; padding: 20px;"></div>
+    </div>
+
+    <br><br><br><br>
+
+    <script src="script.js"></script>
+</div>
+
+<!-- Подключаем проверку подписки ПЕРВОЙ -->
+<script src="script.js"></script>
+
 </body>
 </html>
