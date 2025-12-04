@@ -1,109 +1,27 @@
-.input {
-    width: 300px;
-    padding: 12px 15px;
-    border: 2px solid #ddd;
-    border-radius: 20px;
-    font-size: 16px;
-    outline: none;
-    transition: 0.5s;
+/* Общие стили */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    color: #333;
 }
 
-.input:focus {
-    border-color: violet;
+body {
+    background: white;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    transition: background 0.3s ease;
 }
 
-.input:hover {
-    border-color: violet;
-}
-
-
-.card {
-    width: 300px;
-	height: auto;
-	padding-bottom: 10px;
-	background: none;
-	border-radius: 10px;
-	box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-	transition: all 0.5s ease;
-	margin: 3%;
-
-}
-.cards-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 20px;
-    padding: 20px;
-}
-
-#results_search {
-    width: 100%;
-}
-.card:hover {
-	transform: translateY(-3px);
-	box-shadow: 0 3px 20px rgba(123, 104, 238, 0.3);
-}
-
-.card-text {
-	margin-left: 3%;
-	margin-top: 2%;
-}
-
-.card img {
-    width: 100%;
-    height: 200px;
-	border-radius: 5px;
-	object-fit: cover;
-}
-
-.card button {
-	background: #7B68EE;
+body.dark-mode {
+    background: #2d2d2d;
     color: white;
-    border: none;
-    padding: 10px;
-    width: 80%;
-	margin-left: 10%;
-	margin-right: 10%;
-    border-radius: 5px;
-	transition: all 0.5s ease;
 }
 
-.card button:hover {
-	background: #9370DB;
-	transform: translateY(-2px); 
+body.dark-mode * {
+    color: white;
 }
 
-.card p1 {
-	 font-weight: bold;
-	 padding: 7%;
-	 font-size: 17px;
-	 font-family: serif;
-	 word-wrap: break-word;
-}
-
-.card p2 {
-	 font-size: 12px;
-	 word-wrap: break-word;
-}
-
-.card p {
-	font-size: 12px;
-	word-wrap: break-word;
-}
-
-.product-version {
-	font-weight: bold;
-    word-wrap: break-word;
-    display: inline-block;
-	margin-top: -5%;
-	padding: 0 5px 7px;
-    background: none;
-    color: #FF00FF	;
-    border-radius: 10px;
-    font-size: 12px;
-}
-
-/* Стили для баннера проверки подписки */
+/* Баннер проверки подписки */
 .modal {
     position: fixed;
     top: 0;
@@ -115,10 +33,10 @@
     justify-content: center;
     align-items: center;
     padding: 20px;
-    z-index: 9999;
+    z-index: 1000;
 }
 
-.card {
+.subscription-card {
     background: white;
     border-radius: 20px;
     padding: 30px;
@@ -128,7 +46,11 @@
     box-shadow: 0 20px 60px rgba(0,0,0,0.2);
 }
 
-.status {
+body.dark-mode .subscription-card {
+    background: #3a3a3a;
+}
+
+.status-icon {
     width: 70px;
     height: 70px;
     border-radius: 50%;
@@ -141,38 +63,54 @@
     font-size: 32px;
 }
 
-.success { 
-    background: #e8f5e9; 
-    color: #4caf50; 
+.status-icon.success {
+    background: #e8f5e9;
+    color: #4caf50;
 }
 
-.subtitle {
+.status-subtitle {
     color: #666;
     margin-bottom: 25px;
     line-height: 1.4;
 }
 
-.channels {
+body.dark-mode .status-subtitle {
+    color: #ccc;
+}
+
+.channels-list {
     background: #f8f9fa;
     border-radius: 14px;
     padding: 16px;
     margin: 20px 0;
 }
 
-.channel {
+body.dark-mode .channels-list {
+    background: #4a4a4a;
+}
+
+.channel-item {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 12px 0;
 }
 
-.channel:not(:last-child) {
+.channel-item:not(:last-child) {
     border-bottom: 1px solid #e9ecef;
+}
+
+body.dark-mode .channel-item:not(:last-child) {
+    border-bottom-color: #555;
 }
 
 .channel-name {
     color: #333;
     font-weight: 500;
+}
+
+body.dark-mode .channel-name {
+    color: #fff;
 }
 
 .channel-link {
@@ -194,102 +132,226 @@
     font-weight: 500;
     cursor: pointer;
     margin-top: 10px;
+    transition: transform 0.2s;
 }
 
-.primary {
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.btn-primary {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
 }
 
-.secondary {
+.btn-secondary {
     background: #f8f9fa;
     color: #666;
 }
 
-* {
-	color: black;
-	box-sizing: border-box;
+body.dark-mode .btn-secondary {
+    background: #4a4a4a;
+    color: #ccc;
 }
 
-body {
-	background: white;
-	box-sizing: border-box;
-	transition: all 1s ease;
+/* Основной контент */
+.main-content {
+    display: none;
 }
 
-body:has(.thema:checked) {
-    background: #2d2d2d;
-	color: white;
-}
-
+/* Панель навигации */
 .panel {
-	width: 100%;
-	height: 50px;
-	background: black;
-	position: fixed;
-	left: 0;
-	top: 0;
-
+    width: 100%;
+    height: 50px;
+    background: black;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
 
 .logo {
-		display: flex;
-	    justify-content: center;
-		background: black;
-		font-size: 30px;
-		margin-top: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
 }
 
+.logo a {
+    text-decoration: none;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+}
 
+/* Переключатель темы */
+.theme-switch {
+    position: relative;
+}
 
+.switch {
+    border: 2px solid white;
+    border-radius: 30px;
+    width: 60px;
+    height: 30px;
+    display: inline-block;
+    background: transparent;
+    position: relative;
+    transition: all 0.5s ease;
+    cursor: pointer;
+}
 
-// Switch
+.slider {
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    background: white;
+    transition: all 0.5s ease;
+}
 
+.theme-toggle {
+    display: none;
+}
 
-    .container {
-            width: 100px;
-            height: 50px;
-        }
-        
-        .switch {
-            border: 2px black solid;
-            border-radius: 30px;
-            width: 70px;
-            height: 35px;
-            display: inline-block;
-            background: white;
-            position: relative;
-			transition: all 0.5s ease;
-        }
+.theme-toggle:checked + .slider {
+    transform: translateX(28px);
+}
 
-        .slider {
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            position: absolute;
-            top: 6px;
-			left: 6px;
-            background: black;
-            transition: all 0.5s ease;
-        }
+.switch:has(.theme-toggle:checked) {
+    border-color: #ccc;
+}
 
+/* Поиск */
+.search-container {
+    text-align: center;
+    margin-top: 70px;
+    padding: 20px;
+}
 
-        #checkbox {
-            display: none;
-        }
+.search-input {
+    width: 300px;
+    padding: 12px 15px;
+    border: 2px solid #ddd;
+    border-radius: 20px;
+    font-size: 16px;
+    outline: none;
+    transition: 0.3s;
+    margin-bottom: 20px;
+}
 
-        #checkbox:checked + .slider {
-            transform: translateX(34px); 
-            background: white;
-        }
-		
-        .switch:has(#checkbox:checked) {
-            background: black;
-			border: 2px white solid;
-        }
-		
-		
-// Switch class
-		 	
-	
-// Switch end
+.search-input:focus {
+    border-color: #7B68EE;
+    box-shadow: 0 0 0 3px rgba(123, 104, 238, 0.1);
+}
 
+.search-input:hover {
+    border-color: #7B68EE;
+}
+
+body.dark-mode .search-input {
+    background: #3a3a3a;
+    border-color: #555;
+    color: white;
+}
+
+/* Карточки товаров */
+.cards-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+}
+
+.product-card {
+    width: 300px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+body.dark-mode .product-card {
+    background: #3a3a3a;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 20px rgba(123, 104, 238, 0.3);
+}
+
+.product-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    display: block;
+}
+
+.card-content {
+    padding: 15px;
+}
+
+.product-title {
+    font-weight: bold;
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+body.dark-mode .product-title {
+    color: white;
+}
+
+.product-description {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 10px;
+    line-height: 1.4;
+}
+
+body.dark-mode .product-description {
+    color: #ccc;
+}
+
+.product-price {
+    font-size: 20px;
+    font-weight: bold;
+    color: #7B68EE;
+    margin: 10px 0;
+}
+
+.product-version {
+    display: inline-block;
+    background: rgba(123, 104, 238, 0.1);
+    color: #7B68EE;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+
+.product-card button {
+    background: #7B68EE;
+    color: white;
+    border: none;
+    padding: 12px;
+    width: 100%;
+    border-radius: 5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 10px;
+}
+
+.product-card button:hover {
+    background: #9370DB;
+    transform: translateY(-2px);
+}
