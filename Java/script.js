@@ -1,114 +1,213 @@
-// Данные товаров
-const products = [
-    {
-        id: 1,
-        name: "Minecraft",
-        price: 1999,
-        oldPrice: 2499,
-        img: "https://via.placeholder.com/250x150/4CAF50/fff?text=Minecraft",
-        category: "игра",
-        description: "Песочница с кубической графикой",
-        version: "1.20"
-    },
-    {
-        id: 2,
-        name: "GTA V",
-        price: 2999,
-        oldPrice: 3499,
-        img: "https://via.placeholder.com/250x150/2196F3/fff?text=GTA+V",
-        category: "игра",
-        description: "Криминальная сага в Лос-Сантосе",
-        version: "Premium"
-    },
-    {
-        id: 3,
-        name: "CS:GO",
-        price: 0,
-        oldPrice: 1499,
-        img: "https://via.placeholder.com/250x150/FF9800/fff?text=CS:GO",
-        category: "игра",
-        description: "Тактический шутер",
-        version: "Free"
-    },
-    {
-        id: 4,
-        name: "Cyberpunk 2077",
-        price: 3999,
-        oldPrice: null,
-        img: "https://via.placeholder.com/250x150/9C27B0/fff?text=Cyberpunk",
-        category: "игра",
-        description: "Ролевая игра в будущем",
-        version: "2.0"
-    },
-    {
-        id: 5,
-        name: "The Witcher 3",
-        price: 1499,
-        oldPrice: 2999,
-        img: "https://via.placeholder.com/250x150/E91E63/fff?text=Witcher+3",
-        category: "игра",
-        description: "Фэнтези РПГ про ведьмака",
-        version: "Complete"
-    },
-    {
-        id: 6,
-        name: "Fortnite",
-        price: 0,
-        oldPrice: null,
-        img: "https://via.placeholder.com/250x150/00BCD4/fff?text=Fortnite",
-        category: "игра",
-        description: "Королевская битва",
-        version: "Chapter 5"
-    }
-];
+// Конфигурация проверки подписки
+const BOT_TOKEN = '5718405917:AAEtLH8r_FEh98utTX7-1iSRBBifbMJ0REY';
+const CHANNELS = ['@SimpleDLC', '@GameNews']; // Каналы для проверки
 
-// Создание карточки
-function createCard(product) {
-    return `
-        <div class="card">
-            <img src="${product.img}">
-            <div class='card-text'>
-                <p1>${product.name}</p1><br><br>
-                <div class='product-version'>${product.version}</div><br>
-                <p2>${product.description}</p2><br>
-                <p>Цена: ${product.price === 0 ? 'Бесплатно' : product.price + '₽'}</p>
-            </div>
-            <button onclick="buy(${product.id})">Купить</button>
-        </div>
-    `;
-}
+let telegramUser = null;
+let isSubscribed = false;
+let checkInProgress = false;
 
-// Показать все карточки
-function showCards() {
-    const container = document.getElementById('results_search');
-    if (container) {
-        // Сначала создаем обертку для сетки карточек
-        container.innerHTML = `<div class="cards-container">${products.map(createCard).join('')}</div>`;
-    }
-}
-
-// Поиск товаров
-function searchGames() {
-    const search = document.getElementById('search').value.toLowerCase();
-    const container = document.getElementById('results_search');
+// Показать баннер проверки
+function showSubscriptionModal() {
+    document.getElementById('subscriptionModal').style.display = 'flex';
+    document.getElementById('mainContent').style.display = 'none';
     
-    if (container) {
-        const filtered = products.filter(p => 
-            p.name.toLowerCase().includes(search) ||
-            p.description.toLowerCase().includes(search)
+    // Убираем скролл страницы
+    document.body.style.overflow = 'hidden';
+}
+
+// Скрыть баннер и показать основной контент
+function showMainContent() {
+    document.getElementById('subscriptionModal').style.display = 'none';
+    document.getElementById('mainContent').style.display = 'block';
+    document.body.style.overflow = 'auto';
+}
+
+// Обновить статус в баннере
+function updateStatus(subscribed, message = '') {
+    const icon = document.getElementById('statusIcon');
+    const title = document.getElementById('statusTitle');
+    const text = document.getElementById('statusText');
+    
+    if (subscribed) {
+        // Успех: подписан
+        icon.innerHTML = '✓';
+        icon.className = 'status success';
+        title.textContent = 'Доступ открыт!';
+        text.textContent = message || 'Приятного пользования';
+        
+        // Через 1.5 секунды показываем основной контент
+        setTimeout(() => {
+            showMainContent();
+            // Запускаем основной скрипт
+            if (typeof window.showCards === 'function') {
+                window.showCards();
+            }
+        }, 1500);
+        
+    } else {
+        // Ошибка: не подписан
+        icon.innerHTML = '✕';
+        icon.className = 'status';
+        title.textContent = 'Требуется подписка';
+        text.textContent = message || 'Для доступа подпишитесь на каналы';
+    }
+}
+
+// Инициализация Telegram Web App
+function initTelegram() {
+    if (typeof window.Telegram !== 'undefined' && window.Telegram.WebApp) {
+        const tg = window.Telegram.WebApp;
+        telegramUser = tg.initDataUnsafe?.user;
+        tg.expand(); // Растягиваем на весь экран
+        
+        console.log('Telegram User ID:', telegramUser?.id);
+        
+        // Сразу начинаем проверку
+        checkSubscription();
+        
+        // Автопроверка каждые 30 секунд
+        setInterval(checkSubscription, 30000);
+        
+    } else {
+        // Если не в Telegram
+        updateStatus(false, 'Откройте через Telegram бота');
+    }
+}
+
+// Проверка подписки на каналы
+async function checkSubscription() {
+    if (checkInProgress) return;
+    checkInProgress = true;
+    
+    const checkBtn = document.getElementById('checkBtn');
+    if (checkBtn) {
+        checkBtn.textContent = 'Проверяем...';
+        checkBtn.disabled = true;
+    }
+    
+    // Если не в Telegram
+    if (!window.Telegram?.WebApp) {
+        updateStatus(false, 'Откройте через Telegram бота');
+        resetButton();
+        checkInProgress = false;
+        return;
+    }
+    
+    // Если нет данных пользователя
+    if (!telegramUser) {
+        updateStatus(false, 'Не удалось получить данные');
+        resetButton();
+        checkInProgress = false;
+        return;
+    }
+    
+    try {
+        let allSubscribed = true;
+        
+        // Проверяем каждый канал
+        for (const channel of CHANNELS) {
+            const subscribed = await checkChannelSubscription(channel, telegramUser.id);
+            if (!subscribed) {
+                allSubscribed = false;
+                break;
+            }
+        }
+        
+        if (allSubscribed) {
+            isSubscribed = true;
+            updateStatus(true, 'Вы подписаны на все каналы!');
+        } else {
+            isSubscribed = false;
+            updateStatus(false, 'Подпишитесь на все каналы');
+        }
+        
+    } catch (error) {
+        console.error('Ошибка проверки:', error);
+        updateStatus(false, 'Ошибка соединения');
+    }
+    
+    resetButton();
+    checkInProgress = false;
+}
+
+// Проверка подписки на один канал
+async function checkChannelSubscription(channel, userId) {
+    try {
+        const response = await fetch(
+            `https://api.telegram.org/bot${BOT_TOKEN}/getChatMember`,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    chat_id: channel,
+                    user_id: userId
+                })
+            }
         );
         
-        container.innerHTML = `<div class="cards-container">${filtered.map(createCard).join('')}</div>`;
+        const data = await response.json();
+        
+        if (data.ok) {
+            const status = data.result.status;
+            const validStatuses = ['creator', 'administrator', 'member', 'restricted'];
+            return validStatuses.includes(status);
+        }
+        
+        return false;
+    } catch (error) {
+        console.error(`Ошибка проверки ${channel}:`, error);
+        return false;
     }
 }
 
-// Функция покупки
-function buy(id) {
-    const product = products.find(p => p.id === id);
-    if (product) {
-        alert(`Вы купили: ${product.name} за ${product.price === 0 ? 'бесплатно' : product.price + '₽'}`);
+// Подписаться на все каналы
+function subscribeToAll() {
+    CHANNELS.forEach(channel => {
+        const channelName = channel.substring(1); // Убираем @
+        const link = `https://t.me/${channelName}`;
+        
+        if (typeof window.Telegram !== 'undefined' && 
+            window.Telegram.WebApp && 
+            window.Telegram.WebApp.openTelegramLink) {
+            window.Telegram.WebApp.openTelegramLink(link);
+        } else {
+            window.open(link, '_blank');
+        }
+    });
+    
+    // Через 5 секунд предлагаем проверить снова
+    setTimeout(() => {
+        if (confirm('После подписки нажмите "Проверить подписку"')) {
+            checkSubscription();
+        }
+    }, 5000);
+}
+
+// Сброс кнопки проверки
+function resetButton() {
+    const checkBtn = document.getElementById('checkBtn');
+    if (checkBtn) {
+        checkBtn.textContent = 'Проверить подписку';
+        checkBtn.disabled = false;
     }
 }
 
-// Запуск при загрузке
-document.addEventListener('DOMContentLoaded', showCards);
+// Инициализация при загрузке страницы
+document.addEventListener('DOMContentLoaded', function() {
+    // Показываем баннер проверки
+    showSubscriptionModal();
+    
+    // Назначаем обработчики кнопок
+    document.getElementById('subscribeBtn').onclick = subscribeToAll;
+    document.getElementById('checkBtn').onclick = checkSubscription;
+    
+    // Инициализируем Telegram
+    initTelegram();
+});
+
+// Глобальная функция для доступа к статусу
+window.isUserSubscribed = function() {
+    return isSubscribed;
+};
