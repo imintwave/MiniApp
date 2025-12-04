@@ -4,7 +4,7 @@ const REQUIRED_CHANNELS = [
     { id: '@SimpleDLC', name: 'SimpleDLC', link: 'https://t.me/SimpleDLC' },
     { id: '@legenssoft', name: 'legenssoft', link: 'https://t.me/legenssoft' }
 ];
-
+ 
 // Проверка существования пользователя через бота
 async function checkUserExistence(userId) {
     try {
