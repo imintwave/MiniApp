@@ -1,6 +1,6 @@
 // Конфигурация
 const BOT_TOKEN = '5718405917:AAEtLH8r_FEh98utTX7-1iSRBBifbMJ0REY';
-const CHANNELS = ['@SimpleDLC', '@GameNews'];
+const CHANNELS = ['@SimpleDLC', '@LegensSoft'];
 
 let telegramUser = null;
 let isSubscribed = false;
