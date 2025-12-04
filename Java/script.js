@@ -10,7 +10,7 @@ const products = [
         description: "Песочница с кубической графикой",
         version: "1.20"
     },
-    {
+    { 
         id: 2,
         name: "GTA V",
         price: 2999,
