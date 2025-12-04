@@ -2,7 +2,7 @@ const BOT_TOKEN = '5718405917:AAEtLH8r_FEh98utTX7-1iSRBBifbMJ0REY';
 
 const REQUIRED_CHANNELS = [
     { id: '@SimpleDLC', name: 'SimpleDLC', link: 'https://t.me/SimpleDLC' },
-    { id: '@GameNews', name: 'GameNews', link: 'https://t.me/GameNews' }
+    { id: '@legenssoft', name: 'LegensSoft', link: 'https://t.me/LegensSoft' }
 ];
 
 let userId = null;
