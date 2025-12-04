@@ -2,7 +2,7 @@ const BOT_TOKEN = '5718405917:AAEtLH8r_FEh98utTX7-1iSRBBifbMJ0REY';
 
 const REQUIRED_CHANNELS = [
     { id: '@SimpleDLC', name: 'SimpleDLC', link: 'https://t.me/SimpleDLC' },
-    { id: '@legenssoft', name: 'LegensSoft', link: 'https://t.me/LegensSoft' }
+    { id: '@legenssoft', name: 'Legens Soft', link: 'https://t.me/LegensSoft' }
 ];
 
 
