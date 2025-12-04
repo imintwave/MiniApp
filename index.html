@@ -1,4 +1,5 @@
-<html>
+<!DOCTYPE html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,14 +17,7 @@
             <div class="status-subtitle">Для доступа подпишитесь на каналы</div>
             
             <div class="channels-list" id="channelsList">
-                <div class="channel-item">
-                    <span class="channel-name">SimpleDLC</span>
-                    <a href="https://t.me/SimpleDLC" target="_blank" class="channel-link">Перейти →</a>
-                </div>
-                <div class="channel-item">
-                    <span class="channel-name">GameNews</span>
-                    <a href="https://t.me/GameNews" target="_blank" class="channel-link">Перейти →</a>
-                </div>
+                <!-- Каналы добавляются через JS -->
             </div>
             
             <button class="btn primary" id="subscribeBtn">Подписаться на все</button>
@@ -37,7 +31,7 @@
             SimpleDLC
         </a>
         
-        <div class="container" style='background: black; position: fixed; top: 7; right: 5;'>
+        <div class="container" style='background: black; position: fixed; top: 7px; right: 5px;'>
             <label class="switch">
                 <input type="checkbox" id="checkbox" class='thema'>
                 <span class="slider"></span> 
@@ -52,7 +46,7 @@
     <div style='text-align: center;'>
         <input oninput="searchGames()" type="text" id="search" class="input" placeholder="Поиск игр..." >
         
-        <!-- Контейнер с inline-стилями для сетки -->
+        <!-- Контейнер с карточками -->
         <div id='results_search' style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; padding: 20px;"></div>
     </div>
 
@@ -60,6 +54,6 @@
 
     <!-- Подключение скриптов -->
     <script src="Java/auth.js"></script>
-    <script src="Java/script.js"></script>
+    <script src="Java/products.js"></script>
 </body>
 </html>
