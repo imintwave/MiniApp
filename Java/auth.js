@@ -1,45 +1,102 @@
-// Конфигурация
 const BOT_TOKEN = '5718405917:AAEtLH8r_FEh98utTX7-1iSRBBifbMJ0REY';
+
 const REQUIRED_CHANNELS = [
     { id: '@SimpleDLC', name: 'SimpleDLC', link: 'https://t.me/SimpleDLC' },
-    { id: '@telegram', name: 'legenыssoft', link: 'https://t.me/telegram' }
+    { id: '@GameNews', name: 'GameNews', link: 'https://t.me/GameNews' }
 ];
-  
-// Проверка существования пользователя через бота
-async function checkUserExistence(userId) {
+
+let userId = null;
+
+function getUserId() {
+    if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
+        const tg = Telegram.WebApp;
+        const user = tg.initDataUnsafe?.user;
+        
+        if (user && user.id) {
+            userId = user.id;
+            return userId;
+        }
+    }
+    
+    return null;
+}
+
+async function checkChannelSubscription(channelId) {
     try {
-        const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getChat`, {
+        const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getChatMember`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                chat_id: parseInt(userId)
+                chat_id: channelId,
+                user_id: userId
             })
         });
         
         const data = await response.json();
-        console.log('Проверка пользователя:', data);
-        return data.ok;
+        
+        if (data.ok) {
+            const status = data.result.status;
+            const isSubscribed = status === 'member' || 
+                                status === 'administrator' || 
+                                status === 'creator';
+            return isSubscribed;
+        }
+        
+        return false;
         
     } catch (error) {
-        console.error('Error checking user:', error);
         return false;
     }
 }
 
-// Показать/скрыть модальное окно
-function showSubscribeModal() {
+async function checkAllSubscriptions() {
+    if (!userId) {
+        return { allSubscribed: false, failedChannels: REQUIRED_CHANNELS };
+    }
+    
+    const failedChannels = [];
+    
+    for (const channel of REQUIRED_CHANNELS) {
+        const isSubscribed = await checkChannelSubscription(channel.id);
+        
+        if (!isSubscribed) {
+            failedChannels.push(channel);
+        }
+    }
+    
+    const allSubscribed = failedChannels.length === 0;
+    
+    return { allSubscribed, failedChannels };
+}
+
+function showSubscriptionBanner(failedChannels) {
     const modal = document.getElementById('subscribeModal');
+    const channelsList = document.getElementById('channelsList');
     const results = document.getElementById('results_search');
     const search = document.getElementById('search');
     
-    if (modal) modal.style.display = 'flex';
+    if (!modal || !channelsList) return;
+    
+    channelsList.innerHTML = '';
+    
+    failedChannels.forEach(channel => {
+        const channelItem = document.createElement('div');
+        channelItem.className = 'channel-item';
+        channelItem.innerHTML = `
+            <span class="channel-name">${channel.name}</span>
+            <a href="${channel.link}" target="_blank" class="channel-link">Перейти →</a>
+        `;
+        channelsList.appendChild(channelItem);
+    });
+    
+    modal.style.display = 'flex';
     if (results) results.style.display = 'none';
     if (search) search.style.display = 'none';
 }
 
-function hideSubscribeModal() {
+function hideSubscriptionBanner() {
     const modal = document.getElementById('subscribeModal');
     const results = document.getElementById('results_search');
     const search = document.getElementById('search');
@@ -49,7 +106,6 @@ function hideSubscribeModal() {
     if (search) search.style.display = 'block';
 }
 
-// Настройка кнопок модального окна
 function setupModalButtons() {
     const subscribeBtn = document.getElementById('subscribeBtn');
     const checkBtn = document.getElementById('checkBtn');
@@ -63,48 +119,37 @@ function setupModalButtons() {
     }
     
     if (checkBtn) {
-        checkBtn.onclick = () => {
-            hideSubscribeModal();
-            alert('Подписка проверена! Теперь вы можете использовать приложение.');
+        checkBtn.onclick = async () => {
+            const { allSubscribed, failedChannels } = await checkAllSubscriptions();
+            
+            if (allSubscribed) {
+                hideSubscriptionBanner();
+            } else {
+                showSubscriptionBanner(failedChannels);
+                alert('Вы подписаны не на все каналы!');
+            }
         };
     }
 }
 
-// Основная функция проверки доступа
 async function checkAccess() {
-    console.log('Начинаем проверку доступа...');
+    userId = getUserId();
     
-    // Инициализация Telegram Web App
-    if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
-        const tg = Telegram.WebApp;
-        tg.expand();
-        
-        const user = tg.initDataUnsafe?.user;
-        console.log('Данные пользователя из Telegram:', user);
-        
-        if (user && user.id) {
-            const userExists = await checkUserExistence(user.id);
-            
-            if (userExists) {
-                console.log('Пользователь найден, показываем контент');
-                hideSubscribeModal();
-            } else {
-                console.log('Пользователь не найден или бот не имеет доступа');
-                showSubscribeModal();
-            }
-        } else {
-            console.log('Данные пользователя недоступны');
-            showSubscribeModal();
-        }
+    if (!userId) {
+        showSubscriptionBanner(REQUIRED_CHANNELS);
+        return;
+    }
+    
+    const { allSubscribed, failedChannels } = await checkAllSubscriptions();
+    
+    if (!allSubscribed) {
+        showSubscriptionBanner(failedChannels);
     } else {
-        console.log('Запущено вне Telegram - режим разработки');
-        hideSubscribeModal();
+        hideSubscriptionBanner();
     }
 }
 
-// Инициализация при загрузке
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('Загружен auth.js');
     setupModalButtons();
     checkAccess();
 });
